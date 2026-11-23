@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pedido de Ajuda Estruturado</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background-color: #f4f4f9;
+      color: #333;
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 20px;
+    }
+    .card {
+      background: #fff;
+      padding: 24px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    h2 { margin-top: 0; }
+    label {
+      display: block;
+      font-weight: 600;
+      margin-top: 14px;
+      margin-bottom: 4px;
+    }
+    textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+      font-family: inherit;
+      resize: vertical;
+    }
+    .contador {
+      font-size: 0.85em;
+      color: #666;
+      text-align: right;
+    }
+    .erro {
+      color: #d93025;
+      font-size: 0.9em;
+      margin-top: 10px;
+      font-weight: 600;
+    }
+    button {
+      margin-top: 16px;
+      padding: 10px 18px;
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1em;
+      cursor: pointer;
+    }
+    button:hover { background-color: #1d4ed8; }
+    #resultado {
+      margin-top: 24px;
+      display: none;
+      background: #f8fafc;
+      padding: 16px;
+      border-left: 4px solid #2563eb;
+      border-radius: 4px;
+    }
+    pre {
+      white-space: pre-wrap;
+      font-family: inherit;
+      margin: 0 0 12px 0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <h2>🆘 Gerador de Pedido de Ajuda</h2>
+  <form id="helpForm" novalidate>
+    <label for="objetivo">1. O que quero fazer:</label>
+    <textarea id="objetivo" rows="2" placeholder="Ex: Conectar o botão de envio com a validação em JS"></textarea>
+
+    <label for="problema">2. O que está acontecendo:</label>
+    <textarea id="problema" rows="2" placeholder="Ex: Ao clicar no botão, a página recarrega e não mostra o erro"></textarea>
+
+    <label for="onde">3. Onde (arquivo, linha, ferramenta):</label>
+    <textarea id="onde" rows="2" placeholder="Ex: No arquivo script.js, dentro da função validarFormulario()"></textarea>
+
+    <label for="tentativas">4. O que já tentei (mínimo 20 caracteres):</label>
+    <textarea id="tentativas" rows="3" placeholder="Ex: Já coloquei console.log no início da função e conferi o ID do botão no HTML..."></textarea>
+    <div class="contador" id="contador">0 / 20 caracteres</div>
+
+    <label for="necessidade">5. O que preciso de você:</label>
+    <textarea id="necessidade" rows="2" placeholder="Ex: Apontar por que o evento de submit não está sendo interceptado"></textarea>
+
+    <div class="erro" id="mensagemErro"></div>
+    <button type="submit">Gerar Pedido de Ajuda</button>
+  </form>
+
+  <div id="resultado">
+    <h3>Mensagem Pronta:</h3>
+    <pre id="textoFormatado"></pre>
+    <button type="button" id="btnCopiar">📋 Copiar mensagem</button>
+  </div>
+</div>
+
+<script>
+  const form = document.getElementById('helpForm')
+  const tentativasInput = document.getElementById('tentativas');
+  const contador = document.getElementById('contador');
+  const mensagemErro = document.getElementById('mensagemErro');
+  const resultadoDiv = document.getElementById('resultado');
+  const textoFormatado = document.getElementById('textoFormatado');
+  const btnCopiar = document.getElementById('btnCopiar');
+
+  tentativasInput.addEventListener('input', () => {
+    const len = tentativasInput.value.trim().length
+    contador.textContent = `${len} / 20 caracteres`
+    contador.style.color = len >= 20 ? '#16a34a' : '#666'
+  })
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault()
+    mensagemErro.textContent = ''
+
+    const objetivo = document.getElementById('objetivo').value.trim()
+    const problema = document.getElementById('problema').value.trim()
+    const onde = document.getElementById('onde').value.trim()
+    const tentativas = tentativasInput.value.trim()
+    const necessidade = document.getElementById('necessidade').value.trim()
+
+    if (!objetivo || !problema || !onde || !tentativas || !necessidade) {
+      mensagemErro.textContent = '⚠️ Preencha todos os 5 campos antes de enviar.'
+      return
+    }
+    if (tentativas.length < 20) {
+      mensagemErro.textContent = '⚠️ Explique melhor o que você já tentou (mínimo de 20 caracteres).'
+      return
+    }
+
+    const mensagem = 
+`🆘 *Pedido de Ajuda*
+
+🎯 *O que quero fazer:* ${objetivo}
+❌ *O que está acontecendo:* ${problema}
+📍 *Onde:* ${onde}
+🛠️ *O que já tentei:* ${tentativas}
+🤝 *O que preciso:* ${necessidade}`;
+
+    textoFormatado.textContent = mensagem;
+    resultadoDiv.style.display = 'block'
+  });
+
+  btnCopiar.addEventListener('click', () => {
+    navigator.clipboard.writeText(textoFormatado.textContent).then(() => {
+      btnCopiar.textContent = '✅ Copiado!';
+      setTimeout(() => btnCopiar.textContent = '📋 Copiar mensagem', 2000);
+    });
+  });
+</script>
+
+</body>
+</html>

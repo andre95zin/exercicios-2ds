@@ -263,4 +263,7 @@ Confira: tente enviar só `"gente, não tá funcionando aqui, me ajuda"`. O sist
 **3. Responda**
 
 - O colega precisou perguntar algo? Se sim, o que faltava no pedido?
+Não faltou nada.
 - Qual foi o feedback recebido e **uma coisa** que você vai mudar no próximo pedido?
+ Meu colega disse que, como eu já informei o arquivo, a linha e o que havia tentado Situação,Comportamento, ele entendeu o problema na hora e conseguiu me ajudar sem fazer perguntas extras "Impacto".
+O que vou mudar no próximo pedido: Vou incluir diretamente o trecho do código ou o print do erro, para que quem for ajudar nem precise abrir o arquivo para testar.
