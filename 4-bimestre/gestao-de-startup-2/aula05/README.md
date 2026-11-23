@@ -284,4 +284,8 @@ Confira: com os dois itens do exemplo da aula, o RICE precisa dar **300** e **3,
 **3. Responda**
 
 - Quais os 3 primeiros itens e o RICE de cada um?
+1 - Barba Rice: 100
+2 - Software Rice: 75
+3 - Entrega de dinheiro Rice: 4,46
 - A ordem do RICE mudou alguma coisa que você tinha planejado?
+Sim, do menor em termo de alcance e esforço

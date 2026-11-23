@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Priorizador de Backlog (MoSCoW + RICE)</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 850px; margin: 2rem auto; padding: 0 1rem; color: #222 }
+    form { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr auto; gap: 8px; margin-bottom: 1.5rem }
+    input, select, button { padding: 8px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px }
+    button { background: #0066cc; color: white; border: none; cursor: pointer; font-weight: bold }
+    button:hover { background: #0052a3 }
+    .btn-del { background: #dc3545; padding: 4px 8px; font-size: 12px }
+    table { width: 100%; border-collapse: collapse }
+    th, td { border: 1px solid #ddd; padding: 10px; text-align: left }
+    th { background: #f4f4f4 }
+    .rice-score { font-weight: bold; color: #0066cc }
+  </style>
+</head>
+<body>
+
+  <h2>Priorizador de Backlog (RICE + MoSCoW)</h2>
+
+  <form id="backlogForm">
+    <input type="text" id="titulo" placeholder="Título do item" required>
+    <select id="moscow" required>
+      <option value="Must">Must</option>
+      <option value="Should">Should</option>
+      <option value="Could">Could</option>
+      <option value="Won't">Won't</option>
+    </select>
+    <input type="number" id="alcance" placeholder="Alcance (ex: 500)" min="1" required>
+    <select id="impacto" required>
+      <option value="" disabled selected>Impacto</option>
+      <option value="1">1 - Baixo</option>
+      <option value="2">2 - Médio</option>
+      <option value="3">3 - Alto</option>
+    </select>
+    <input type="number" id="esforco" placeholder="Esforço (h)" min="0.5" step="0.5" required>
+    <button type="submit">Adicionar</button>
+  </form>
+
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Item</th>
+        <th>MoSCoW</th>
+        <th>Alcance</th>
+        <th>Impacto</th>
+        <th>Esforço (h)</th>
+        <th>RICE</th>
+        <th>Ação</th>
+      </tr>
+    </thead>
+    <tbody id="tabelaCorpo"></tbody>
+  </table>
+
+  <script>
+    const form = document.getElementById('backlogForm')
+    const tabelaCorpo = document.getElementById('tabelaCorpo')
+    let itens = JSON.parse(localStorage.getItem('backlog_rice')) || []
+
+    function calcularRICE(alcance, impacto, esforco) {
+      return (alcance * impacto) / esforco
+    }
+
+    function renderizar() {
+      itens.sort((a, b) => b.rice - a.rice)
+      tabelaCorpo.innerHTML = ''
+
+      itens.forEach((item, index) => {
+        const tr = document.createElement('tr')
+        tr.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${item.titulo}</td>
+          <td>${item.moscow}</td>
+          <td>${item.alcance}</td>
+          <td>${item.impacto}</td>
+          <td>${item.esforco}h</td>
+          <td class="rice-score">${item.rice.toLocaleString('pt-BR', { maximumFractionDigits: 2 })}</td>
+          <td><button class="btn-del" onclick="removerItem(${item.id})">X</button></td>
+        `
+        tabelaCorpo.appendChild(tr);
+      })
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault()
+      const titulo = document.getElementById('titulo').value
+      const moscow = document.getElementById('moscow').value
+      const alcance = parseFloat(document.getElementById('alcance').value)
+      const impacto = parseFloat(document.getElementById('impacto').value)
+      const esforco = parseFloat(document.getElementById('esforco').value)
+      const rice = calcularRICE(alcance, impacto, esforco)
+
+      itens.push({ id: Date.now(), titulo, moscow, alcance, impacto, esforco, rice })
+      localStorage.setItem('backlog_rice', JSON.stringify(itens))
+      form.reset()
+      renderizar()
+    })
+
+    window.removerItem = function(id) {
+      itens = itens.filter(item => item.id !== id)
+      localStorage.setItem('backlog_rice', JSON.stringify(itens))
+      renderizar()
+    }
+
+    renderizar()
+  </script>
+</body>
+</html>
